@@ -23,9 +23,8 @@ function Profil({ navigation }) {
 
     const retrieveData = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
-            const user_id = await AsyncStorage.getItem('@UserData:user_id');
-            console.log(user_id);
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const user_id = await AsyncStorage.getItem('user_id');
             if (accessToken !== null && user_id !== null) {
                 const newUrl = `https://zabalo.alwaysdata.net/sae401/api/users/` + user_id;
                 getUser(newUrl, accessToken);
@@ -50,7 +49,7 @@ function Profil({ navigation }) {
                 return response.json();
             })
             .then((dataJSON) => {
-                console.log('Data JSON:', dataJSON);
+                console.log(dataJSON);
                 setUser(dataJSON);
                 setEditedName(dataJSON.name);
                 setEditedEmail(dataJSON.email);
@@ -62,7 +61,7 @@ function Profil({ navigation }) {
 
     const logout = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
+            const accessToken = await AsyncStorage.getItem('userToken');
             const fetchOptions = {
                 method: "POST",
                 headers: {
@@ -71,8 +70,10 @@ function Profil({ navigation }) {
             };
             const response = await fetch('https://zabalo.alwaysdata.net/sae401/api/logout', fetchOptions);
             if (response.ok) {
-                await AsyncStorage.removeItem('@UserData:accessToken');
-                await AsyncStorage.removeItem('@UserData:user_id');
+                await AsyncStorage.removeItem('userToken');
+                await AsyncStorage.removeItem('userData');
+                await AsyncStorage.removeItem('userAdmin');
+
                 setUser(null);
                 navigation.navigate('Home', { screen: 'Home' });
             } else {

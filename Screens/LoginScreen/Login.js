@@ -34,12 +34,13 @@ export default function LoginScreen({ navigation }) {
         password: password
     }
 
-    const storeData = async (data) => {
+    const storeData = async (accessToken, user_id, user_admin) => {
         try {
-            const accessToken = data.accessToken.substring(3); // Supprime les 3 premiers caractères
-            const userId = data.user_id.toString(); // Assurez-vous que user_id est une chaîne de caractères ou un type pouvant être transformé en chaîne de caractères
-            await AsyncStorage.setItem('@UserData:accessToken', accessToken);
-            await AsyncStorage.setItem('@UserData:user_id', userId);
+            await AsyncStorage.setItem('userToken', accessToken);
+            await AsyncStorage.setItem('userData', user_id);
+            await AsyncStorage.setItem('userAdmin', user_admin);
+
+            
         } catch (error) {
             // Gestion des erreurs lors de la sauvegarde des données
             console.error('Erreur lors de la sauvegarde des données:', error);
@@ -59,14 +60,13 @@ export default function LoginScreen({ navigation }) {
                 return response.json();
             })
             .then((dataJSON) => {
-                console.log(dataJSON);
+                console.log(dataJSON.admin);
                 const accessToken = dataJSON.accessToken;
                 const delimiterIndex = accessToken.indexOf('|');
                 const token = accessToken.substring(delimiterIndex + 1);
 
                 if (dataJSON.status == 1) {
-                    storeData({ accessToken: token, user_id: dataJSON.user_id })
-                    console.log(storeData)
+                    storeData(token, dataJSON.user_id, dataJSON.admin)
                     navigation.navigate('Home')
                 }
                 return "Problème de connexion"
