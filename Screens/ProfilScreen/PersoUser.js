@@ -11,8 +11,8 @@ export default function PersoUser({ navigation, route }) {
     // Fonction pour récupérer les personnages de l'utilisateur
     const retrieveData = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
-            const user_id = await AsyncStorage.getItem('@UserData:user_id');
+            const accessToken = await AsyncStorage.getItem('userToken');
+            const user_id = await AsyncStorage.getItem('userData');
             if (accessToken !== null && user_id !== null) {
                 const newUrl = `https://zabalo.alwaysdata.net/sae401/api/users/${user_id}`;
                 getUser(newUrl, accessToken);
