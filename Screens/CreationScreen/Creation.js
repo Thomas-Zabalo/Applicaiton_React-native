@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Creation(props) {
     const [nom, setNom] = useState("");
-
+    console.log(props);
     const handleNomChange = (value) => setNom(value);
 
     const createPersonnage = async () => {
