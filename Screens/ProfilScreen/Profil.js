@@ -25,6 +25,7 @@ function Profil({ navigation }) {
         try {
             const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
             const user_id = await AsyncStorage.getItem('@UserData:user_id');
+            console.log(user_id);
             if (accessToken !== null && user_id !== null) {
                 const newUrl = `https://zabalo.alwaysdata.net/sae401/api/users/` + user_id;
                 getUser(newUrl, accessToken);

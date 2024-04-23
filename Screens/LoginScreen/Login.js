@@ -60,8 +60,12 @@ export default function LoginScreen({ navigation }) {
             })
             .then((dataJSON) => {
                 console.log(dataJSON);
+                const accessToken = dataJSON.accessToken;
+                const delimiterIndex = accessToken.indexOf('|');
+                const token = accessToken.substring(delimiterIndex + 1);
+
                 if (dataJSON.status == 1) {
-                    storeData({ accessToken: dataJSON.accessToken, user_id: dataJSON.user_id })
+                    storeData({ accessToken: token, user_id: dataJSON.user_id })
                     console.log(storeData)
                     navigation.navigate('Home')
                 }
