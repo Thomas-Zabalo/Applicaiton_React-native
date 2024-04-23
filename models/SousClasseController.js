@@ -1,0 +1,44 @@
+export default class SousClasse {
+
+    constructor(classes_id, nom, description, icone, id) {
+
+        this._classes_id = classes_id
+        this._id = id;
+        this._nom = nom;
+        this._description = description;
+        this._icone = icone;
+
+    }
+
+    get classes_id() {
+        return this._classes_id
+    }
+
+    get id() {
+        return this._id
+    }
+
+    get nom() {
+        return this._nom
+    }
+
+    get description() {
+        return this._description
+    }
+
+    get icone() {
+        return this._icone
+    }
+
+    toJSON() {
+        return {
+            classes_id: this._classes_id,
+            id: this._id,
+            nom: this._nom,
+            description: this._description,
+            icone: this._icone,
+        }
+    }
+}
+
+
