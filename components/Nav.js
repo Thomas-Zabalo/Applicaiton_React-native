@@ -12,36 +12,36 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 //Page liée à la page d'acceuil (liste personnage + detail personnage)
-import HomeScreen from './Screens/HomeScreen/Home';
-import ListePersonnage from './Screens/HomeScreen/Liste';
-import Detail from './Screens/HomeScreen/Detail';
-import ListeHome from './components/ListeHome';
+import HomeScreen from '../Screens/HomeScreen/Home';
+import ListePersonnage from '../Screens/HomeScreen/Liste';
+import Detail from '../Screens/HomeScreen/Detail';
+import ListeHome from '../components/ListeHome';
 
 //Accès profil et personnage de l'utilisateur
-import Profil from './Screens/ProfilScreen/Profil';
-import PersoUser from './Screens/ProfilScreen/PersoUser';
-import DetailPerso from './Screens/ProfilScreen/DetailPerso';
+import Profil from '../Screens/ProfilScreen/Profil';
+import PersoUser from '../Screens/ProfilScreen/PersoUser';
+import DetailPerso from '../Screens/ProfilScreen/DetailPerso';
 
 
 //Création d'un personnage
-import ModifRace from './Screens/ModifiScreen/ModifRace';
-import ModifSousRace from './Screens/ModifiScreen/ModifSousRace';
-import ModifClasses from './Screens/ModifiScreen/ModifClasse';
-import ModifSousClasses from './Screens/ModifiScreen/ModifSousClasse';
-import ModifOrigines from './Screens/ModifiScreen/ModifOrigine';
-import ModifCreation from './Screens/ModifiScreen/ModifCreation';
+import ModifRace from '../Screens/ModifiScreen/ModifRace';
+import ModifSousRace from '../Screens/ModifiScreen/ModifSousRace';
+import ModifClasses from '../Screens/ModifiScreen/ModifClasse';
+import ModifSousClasses from '../Screens/ModifiScreen/ModifSousClasse';
+import ModifOrigines from '../Screens/ModifiScreen/ModifOrigine';
+import ModifCreation from '../Screens/ModifiScreen/ModifCreation';
 
 //Création d'un personnage
-import Race from './Screens/CreationScreen/Race';
-import SousRace from './Screens/CreationScreen/SousRace';
-import Classes from './Screens/CreationScreen/Classe';
-import SousClasses from './Screens/CreationScreen/SousClasse';
-import Origines from './Screens/CreationScreen/Origine';
-import Creation from './Screens/CreationScreen/Creation';
+import Race from '../Screens/CreationScreen/Race';
+import SousRace from '../Screens/CreationScreen/SousRace';
+import Classes from '../Screens/CreationScreen/Classe';
+import SousClasses from '../Screens/CreationScreen/SousClasse';
+import Origines from '../Screens/CreationScreen/Origine';
+import Creation from '../Screens/CreationScreen/Creation';
 
 //Connexion et Incription
-import LoginScreen from './Screens/LoginScreen/Login';
-import SignUp from './Screens/LoginScreen/SignUp';
+import LoginScreen from '../Screens/LoginScreen/Login';
+import SignUp from '../Screens/LoginScreen/SignUp';
 
 
 function AccueilScreen() {
