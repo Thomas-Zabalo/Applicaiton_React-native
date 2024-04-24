@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { List } from "react-native-paper";
 
 function Detail(props) {
+    console.log(props)
     const { id } = props.route.params;
 
     const [lPerso, setLPerso] = useState(null);

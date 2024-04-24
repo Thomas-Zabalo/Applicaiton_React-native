@@ -16,7 +16,6 @@ export default function ListeHome(props) {
         fetch(url, fetchOptions)
             .then((response) => response.json())
             .then((dataJSON) => {
-                console.log(dataJSON)
                 let personnages = dataJSON.slice(0, 5);
                 let l = [];
                 for (let p of personnages) {

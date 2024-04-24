@@ -2,14 +2,29 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Card, Searchbar } from "react-native-paper";
 import ListeHome from '../../components/ListeHome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../LocalStorage/AuthContext';
 
 function HomeScreen(props) {
+    const { logout } = useAuth();
     const [nom, setNom] = useState('');
-    console.log(props)
+    const [userToken, setUserToken] = useState(null);
+    const [userData, setUserData] = useState(null);
+    const [userAdmin, setUserAdmin] = useState(null);
 
     const handleSearch = () => {
         props.navigation.navigate('Liste des personnage', { searchnom: nom });
         setNom('')
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logout(); // Appel de la fonction logout
+            console.log('Déconnexion réussie');
+            // Vous pouvez ici rediriger l'utilisateur vers l'écran de connexion
+        } catch (error) {
+            console.error('Erreur lors de la déconnexion:', error);
+        }
     };
 
     return (
@@ -39,7 +54,9 @@ function HomeScreen(props) {
                     <Card.Cover source={{ uri: "https://images6.alphacoders.com/133/1331323.jpeg" }} />
                 </Card>
             </View>
-
+            <TouchableOpacity onPress={handleLogout} style={styles.button}>
+                <Text style={styles.link}>Voir plus</Text>
+            </TouchableOpacity>
             <View style={styles.section}>
                 <Text style={styles.heading}>Communauté</Text>
                 <View style={styles.row}>

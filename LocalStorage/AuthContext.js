@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
                 const token = await AsyncStorage.getItem('userToken');
                 const userData = await AsyncStorage.getItem('userData');
                 const admin = await AsyncStorage.getItem('userAdmin');
-                
+
                 setUserToken(token);
                 setUserData(userData ? JSON.parse(userData) : null);
                 setUserAdmin(admin);
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
             await AsyncStorage.setItem('userToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await AsyncStorage.setItem('userAdmin', admin.toString());
-            
+
             setUserToken(token);
             setUserData(userData);
             setUserAdmin(admin.toString());
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             await AsyncStorage.removeItem('userToken');
             await AsyncStorage.removeItem('userData');
             await AsyncStorage.removeItem('userAdmin');
-            
+
             setUserToken(null);
             setUserData(null);
             setUserAdmin(null);

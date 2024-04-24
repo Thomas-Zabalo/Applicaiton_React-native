@@ -37,7 +37,9 @@ function Profil({ navigation }) {
         }
     };
 
+
     function getUser(url, token) {
+        console.log(token)
         const fetchOptions = {
             method: "GET",
             headers: {
@@ -49,7 +51,6 @@ function Profil({ navigation }) {
                 return response.json();
             })
             .then((dataJSON) => {
-                console.log(dataJSON);
                 setUser(dataJSON);
                 setEditedName(dataJSON.name);
                 setEditedEmail(dataJSON.email);
@@ -82,65 +83,78 @@ function Profil({ navigation }) {
         } catch (error) {
             console.error('Erreur lors de la déconnexion:', error);
         }
+
+    }; const dismissKeyboard = () => {
+        Keyboard.dismiss();
     };
 
     return (
-        <View style={styles.container}>
+
+        <View style={styles.container} onPress={dismissKeyboard}>
 
 
             {user && (
                 <View style={styles.profileContainer}>
                     <Icon
                         name="exit-to-app"
-                        size={24}
-                        color="red"
-                        style={{ position: 'absolute', top: 10, right: 10 }}
+                        size={30}
+                        color="#f44336"
                         onPress={logout}
+                        style={styles.logoutIcon}
                     />
                     <Text style={styles.title}>Mon profil</Text>
-                    <Image source={{ uri: 'https://images6.alphacoders.com/133/1331323.jpeg' }} style={styles.profileImage} />
-                    <TextInput
-                        style={styles.input}
-                        value={editedEmail}
-                        onChangeText={setEditedEmail}
-                        placeholder="Email"
-                        editable={false}
-                        theme={{ colors: { onSurfaceVariant: 'white' } }}
-                        activeOutlineColor="white"
-                        outlineColor="white"
-                        textColor="white"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        value={editedName}
-                        onChangeText={setEditedName}
-                        placeholder="Nom"
-                        editable={false}
-                        theme={{ colors: { onSurfaceVariant: 'white' } }}
-                        activeOutlineColor="white"
-                        outlineColor="white"
-                        textColor="white"
-                    />
-
-
-                    <Text style={styles.characterCount}>Nombre de personnages: {user.personnages.length}</Text>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Mes personnages', { userId: user.id })}
-                        disabled={!user || user.personnages.length === 0}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Modifier</Text>
-                    </TouchableOpacity>
-
-
-
+                    <View style={styles.profileContainer}>
+                        <Image source={{ uri: user.icone }} style={styles.profileImage} />
+                        <TextInput
+                            label="Email"
+                            mode="outlined"
+                            style={styles.input}
+                            value={user.email}
+                            // onChangeText={handleEmailChange}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            placeholder="Entrez votre email"
+                            theme={inputTheme}
+                            right={<TextInput.Icon icon='account-circle' color='white' style={{ marginTop: 14 }} />}
+                        />
+                        <TextInput
+                            label="Email"
+                            mode="outlined"
+                            style={styles.input}
+                            value={user.name}
+                            // onChangeText={handleEmailChange}
+                            autoCapitalize="none"
+                            keyboardType="Nom d'utilisateur"
+                            placeholder="Entrez votre nom d'utilisateur"
+                            theme={inputTheme}
+                            right={<TextInput.Icon icon='email' color='white' style={{ marginTop: 14 }} />}
+                        />
+                        <Text style={styles.characterCount}>Nombre de personnages: {user.personnages.length}</Text>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate('Mes personnages', { userId: user.id })}
+                            disabled={user.personnages.length === 0}
+                        >
+                            <Text style={styles.buttonText}>Modifier</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
             {!user && (
-                <View style={styles.loginContainer}>
-                    <Text style={styles.title}>Connectez-vous ou inscrivez-vous</Text> 
-                    <Button title="Se connecter" onPress={() => navigation.navigate('Accueil', { screen: 'Login' })} />
-                    <Button title="S'inscrire" onPress={() => navigation.navigate('Accueil', { screen: 'Inscription' })} />
+                <View style={styles.container}>
+                    <Text style={styles.title}>Connectez-vous ou inscrivez-vous</Text>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => navigation.navigate('Login')}
+                    >
+                        <Text style={styles.buttonText}>Se connecter</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, styles.signupButton]}
+                        onPress={() => navigation.navigate('Inscription')}
+                    >
+                        <Text style={styles.buttonText}>S'inscrire</Text>
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -149,13 +163,31 @@ function Profil({ navigation }) {
 
 export default Profil;
 
+const inputTheme = {
+    colors: {
+        primary: 'white',
+        text: 'white',
+        placeholder: 'white',
+        background: 'transparent',
+        onSurface: 'white',
+        underlineColor: 'transparent',
+        outlineColor: 'white',
+    }
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         backgroundColor: '#141218',
-        paddingTop: 65,
+    },
+    roundedBottom: {
+        width: '100%',
+        height: 30,
+        backgroundColor: 'purple',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
     },
     title: {
         fontSize: 22,
@@ -169,17 +201,16 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     profileImage: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
+        width: 200,
+        height: 200,
+        borderRadius: 25,
         marginVertical: 10,
     },
     input: {
-        width: Dimensions.get("window").width / 1.4,
-        marginVertical: 20,
-        paddingHorizontal: 10,
+        width: '100%',
+        marginBottom: 10,
+        backgroundColor: '#282c34',
         borderRadius: 5,
-        backgroundColor: '#0000004D',
     },
     button: {
         borderColor: '#D0BCFF',
@@ -204,5 +235,10 @@ const styles = StyleSheet.create({
     },
     loginContainer: {
         alignItems: 'center',
+    },
+    logoutIcon: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
     },
 });

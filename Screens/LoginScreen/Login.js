@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import User from "../../models/UserController";
 
@@ -12,7 +12,6 @@ export default function LoginScreen({ navigation }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [passVisi, setPassVisi] = useState(true);
 
     const handleEmailChange = (value) => setEmail(value);
@@ -39,10 +38,8 @@ export default function LoginScreen({ navigation }) {
             await AsyncStorage.setItem('userToken', accessToken);
             await AsyncStorage.setItem('userData', user_id);
             await AsyncStorage.setItem('userAdmin', user_admin);
-
-            
+            console.log(accessToken, user_id, user_admin)
         } catch (error) {
-            // Gestion des erreurs lors de la sauvegarde des données
             console.error('Erreur lors de la sauvegarde des données:', error);
         }
     };
@@ -51,118 +48,142 @@ export default function LoginScreen({ navigation }) {
         const fetchOptions = {
             method: "POST",
             headers: {
-                'Content-Type': 'application/jsons',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(body)
         };
         fetch(url, fetchOptions)
             .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Réponse réseau non OK');
+                }
                 return response.json();
             })
             .then((dataJSON) => {
-                console.log(dataJSON.admin);
-                const accessToken = dataJSON.accessToken;
-                const delimiterIndex = accessToken.indexOf('|');
-                const token = accessToken.substring(delimiterIndex + 1);
-
-                if (dataJSON.status == 1) {
-                    storeData(token, dataJSON.user_id, dataJSON.admin)
-                    navigation.navigate('Home')
+                console.log(dataJSON.accessToken)
+                console.log(dataJSON.admin)
+                console.log(dataJSON.user_id)
+                const delimiterIndex = dataJSON.accessToken.indexOf('|');
+                if (delimiterIndex !== -1) {
+                    const token = dataJSON.accessToken.substring(delimiterIndex + 1);
+                    storeData(token, dataJSON.user_id.toString(), dataJSON.admin.toString());
+                    console.log(storeData)
+                    // navigation.navigate('Home');
+                } else {
+                    console.log('Delimiter "|" not found in accessToken');
                 }
-                return "Problème de connexion"
+                // navigation.navigate('Home');
             })
             .catch((error) => {
-                console.log(error);
+                console.error('Error:', error);
             });
     }
 
+
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
+
     return (
-        <View style={styles.container}>
-            <Image style={styles.image} source={require("../../assets/Logo.png")} />
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <View style={styles.container}>
+                <Image style={styles.logo} source={require('../../assets/Logo.png')} />
+                <TextInput
+                    label="Email"
+                    mode="outlined"
+                    style={styles.input}
+                    value={email}
+                    onChangeText={handleEmailChange}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    placeholder="Entrez votre email"
+                    theme={inputTheme}
+                    right={<TextInput.Icon icon='email' color='white' style={{ marginTop: 14 }} />}
+                />
+                <TextInput
+                    label="Password"
+                    mode="outlined"
+                    style={styles.input}
+                    value={password}
+                    onChangeText={handlePassChange}
+                    secureTextEntry={passVisi}
+                    right={<TextInput.Icon icon={passVisi ? 'eye-off' : 'eye'} onPress={() => setPassVisi(!passVisi)} color='white' style={{ marginTop: 14 }} />}
+                    theme={inputTheme}
+                />
+                <TouchableOpacity
+                    onPress={() => {
+                        if (email !== '' && password !== '') {
+                            handleLogin();
+                            navigation.navigate('Home');
+                        } else {
+                            Alert.alert('Veuillez remplir tous les champs.');
+                        }
+                    }}
+                    style={styles.loginButton}
+                >
+                    <Text style={styles.loginText}>Se connecter</Text>
+                </TouchableOpacity>
+                <Text style={styles.registerPrompt}>Vous n'avez pas encore de compte ?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Inscription')}>
+                    <Text style={styles.registerButton}>Créez un compte</Text>
+                </TouchableOpacity>
+            </View>
+        </TouchableWithoutFeedback>
 
-
-            <TextInput
-                style={styles.input}
-                onChangeText={handleEmailChange}
-                value={email}
-                placeholder="Email"
-                keyboardType='email-address'
-                theme={{ colors: { onSurfaceVariant: 'white' } }}
-                activeOutlineColor="white"
-                outlineColor="white"
-                textColor="white"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={handlePassChange}
-                value={password}
-                placeholder="Mot de passe"
-                secureTextEntry={passVisi}
-                right={
-                    <TextInput.Icon
-                        icon={passVisi ? 'eye-off' : 'eye'}
-                        onPress={() => setPassVisi(!passVisi)}
-                        color={'white'}
-                        size={24}
-                        style={styles.icon}
-                    />
-                }
-                theme={{ colors: { onSurfaceVariant: 'white' } }}
-                activeOutlineColor="white"
-                outlineColor="white"
-                textColor="white"
-            />
-
-
-
-            <TouchableOpacity onPress={handleLogin} style={styles.loginBtn}>
-                <Text style={styles.loginText}>Se connecter</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.texte}>Vous n'avez pas encore de compte ?</Text>
-
-            <TouchableOpacity onPress={() => { navigation.navigate('Inscription') }} style={styles.SignInBtn}>
-                <Text style={styles.loginText}>Créez un compte !</Text>
-            </TouchableOpacity>
-        </View>
     );
 }
+const inputTheme = {
+    colors: {
+        primary: 'white',
+        text: 'white',
+        placeholder: 'white',
+        background: 'transparent',
+        onSurface: 'white',
+        underlineColor: 'transparent',
+        outlineColor: 'white',
+    }
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         backgroundColor: '#141218',
-        paddingTop: 65,
+        paddingTop: 20,
     },
-
+    logo: {
+        width: 120,
+        height: 120,
+        marginBottom: 20,
+    },
     input: {
-        width: Dimensions.get("window").width / 1.4,
-        marginVertical: 20,
-        paddingHorizontal: 10,
+        width: '90%',
+        height: 55,
+        marginBottom: 20,
         borderRadius: 5,
-        backgroundColor: '#0000004D',
+        backgroundColor: '#282c34',
     },
-    texte: {
+    loginButton: {
+        width: '80%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#D0BCFF',
+        padding: 10,
+        borderRadius: 10,
+    },
+    loginText: {
         color: 'white',
-        marginVertical: 20,
+        fontSize: 18,
     },
-    SignInBtn: {
-        width: "40%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#D0BCFF",
-    },
-    loginBtn: {
-        width: "80%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
+    registerPrompt: {
         marginTop: 20,
-        backgroundColor: "#D0BCFF",
+        color: 'white',
+    },
+    registerButton: {
+        color: '#D0BCFF',
+        fontSize: 16,
+        marginTop: 5,
     },
 });

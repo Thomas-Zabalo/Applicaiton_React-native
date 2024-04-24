@@ -48,7 +48,9 @@ export default function PersoUser({ navigation, route }) {
                         p.sousclasses_id,
                         p.users_id,
                         p.nom,
-                        p.id
+                        p.id,
+                        p.user,
+                        p.sousclasses
                     );
                     l.push(personnage);
                 }
@@ -126,7 +128,7 @@ export default function PersoUser({ navigation, route }) {
                 data={lPerso}
                 renderItem={({ item }) => (
                     <Card style={styles.card}>
-                        <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
+                        <Card.Cover source={{ uri: item.sousclasses.icone }} />
                         <Card.Content>
                             <Title style={{ fontSize: 14 }}>{item.nom}</Title>
                         </Card.Content>

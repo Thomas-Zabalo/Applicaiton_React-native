@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextInput } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Alert, Dimensions, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import User from '../../models/UserController';
 
 export default function SignUp({ navigation }) {
@@ -16,7 +16,7 @@ export default function SignUp({ navigation }) {
     const handleEmailChange = (value) => setEmail(value);
     const handlePassChange = (value) => setPassword(value);
 
-    
+
     const handleSignIn = () => {
         if (email !== '' && password !== '' && nom !== '') {
             const userData = {
@@ -30,7 +30,7 @@ export default function SignUp({ navigation }) {
         }
     };
 
-    function getUtilisateur(userData) { 
+    function getUtilisateur(userData) {
         const fetchOptions = {
             method: "POST",
             headers: {
@@ -73,118 +73,125 @@ export default function SignUp({ navigation }) {
             });
     }
 
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
 
     return (
-        <View style={styles.container}>
 
-            <TextInput
-                style={styles.input}
-                onChangeText={handleNomChange}
-                value={nom}
-                placeholder="Nom d'utilisateur"
-                theme={{ colors: { onSurfaceVariant: 'white' } }}
-                activeOutlineColor="white"
-                outlineColor="white"
-                textColor="white"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={handleEmailChange}
-                value={email}
-                placeholder="Email"
-                keyboardType='email-address'
-                theme={{ colors: { onSurfaceVariant: 'white' } }}
-                activeOutlineColor="white"
-                outlineColor="white"
-                textColor="white"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={handlePassChange}
-                value={password}
-                placeholder="Mot de passe"
-                secureTextEntry={passVisi}
-                right={
-                    <TextInput.Icon
-                        icon={passVisi ? 'eye-off' : 'eye'}
-                        onPress={() => setPassVisi(!passVisi)}
-                        color={'white'}
-                        size={24}
-                        style={styles.icon}
-                    />
-                }
-                theme={{ colors: { onSurfaceVariant: 'white' } }}
-                activeOutlineColor="white"
-                outlineColor="white"
-                textColor="white"
-            />
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <View style={styles.container}>
+                <Image style={styles.logo} source={require('../../assets/Logo.png')} />
+                <TextInput
+                    label="Nom"
+                    mode="outlined"
+                    style={styles.input}
+                    value={nom}
+                    onChangeText={handleNomChange}
+                    autoCapitalize="none"
+                    placeholder="Nom d'utilisateur"
+                    theme={inputTheme}
+                    right={<TextInput.Icon icon='account-circle' color='white' style={{ marginTop: 14 }}/>}
+                />
 
+                <TextInput
+                    label="Email"
+                    mode="outlined"
+                    style={styles.input}
+                    value={email}
+                    onChangeText={handleEmailChange}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    placeholder="Entrez votre email"
+                    theme={inputTheme}
+                    right={<TextInput.Icon icon='email' color='white' style={{ marginTop: 14 }}/>}
+                />
+                <TextInput
+                    label="Password"
+                    mode="outlined"
+                    style={styles.input}
+                    value={password}
+                    onChangeText={handlePassChange}
+                    secureTextEntry={passVisi}
+                    right={<TextInput.Icon icon={passVisi ? 'eye-off' : 'eye'} onPress={() => setPassVisi(!passVisi)} color='white' style={{ marginTop: 14 }}/>}
+                    theme={inputTheme}
+                />
 
+                <TouchableOpacity
+                    onPress={() => {
+                        if (nom !== '' && email !== '' && password !== '') {
+                            handleSignIn();
+                            navigation.navigate('Login');
+                        } else {
+                            Alert.alert('Veuillez remplir tous les champs.');
+                        }
+                    }}
+                    style={styles.loginButton}
+                >
+                    <Text style={styles.loginText}>S'inscrire</Text>
+                </TouchableOpacity>
 
+                <Text style={styles.registerPrompt}>Vous avez déjà un compte ?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.registerButton}>Connectez vous</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-                onPress={() => {
-                    if (nom !== '' && email !== '' && password !== '') {
-                        handleSignIn();
-                        navigation.navigate('Login');
-                    } else {
-                        Alert.alert('Veuillez remplir tous les champs.');
-                    }
-                }}
-                style={styles.loginBtn}
-            >
-                <Text style={styles.loginText}>S'inscrire</Text>
-            </TouchableOpacity>
-
-
-            <Text style={styles.texte}>Vous avez déjà un compte ?</Text>
-
-            <TouchableOpacity onPress={() => { navigation.navigate('Login') }} style={styles.SignInBtn}>
-                <Text style={styles.loginText}>Connectez vous !</Text>
-            </TouchableOpacity>
-
-        </View>
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
+const inputTheme = {
+    colors: {
+        primary: 'white',
+        text: 'white',
+        placeholder: 'white',
+        background: 'transparent',
+        onSurface: 'white',
+        underlineColor: 'transparent',
+        outlineColor: 'white',
+    }
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         backgroundColor: '#141218',
-        paddingTop: 65,
+        paddingTop: 20,
     },
-    icon: {
-        color: 'white',
+    logo: {
+        width: 120,
+        height: 120,
+        marginBottom: 20,
     },
     input: {
-        width: Dimensions.get("window").width / 1.4,
-        marginVertical: 20,
-        paddingHorizontal: 10,
+        width: '90%',
+        height: 55,
+        marginBottom: 20,
         borderRadius: 5,
-        backgroundColor: '#0000004D',
-        color: 'white',
+        backgroundColor: '#282c34',
     },
-    texte: {
-        color: 'white',
-        marginVertical: 20,
-    },
-    SignInBtn: {
-        width: "40%",
-        borderRadius: 25,
+    loginButton: {
+        width: '80%',
         height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#D0BCFF",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#D0BCFF',
+        padding: 10,
+        borderRadius: 10,
     },
-    loginBtn: {
-        width: "80%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
+    loginText: {
+        color: 'white',
+        fontSize: 18,
+    },
+    registerPrompt: {
         marginTop: 20,
-        backgroundColor: "#D0BCFF",
+        color: 'white',
+    },
+    registerButton: {
+        color: '#D0BCFF',
+        fontSize: 16,
+        marginTop: 5,
     },
 });
