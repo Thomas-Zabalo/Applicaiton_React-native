@@ -8,49 +8,31 @@ export default function Creation(props) {
     console.log(props);
     const handleNomChange = (value) => setNom(value);
 
-    const createPersonnage = async () => {
-        try {
-            const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
-            const user_id = await AsyncStorage.getItem('@UserData:user_id');
+    async function createPersonnage() {
+        const accessToken = await AsyncStorage.getItem('userToken')
+        const user_id = await AsyncStorage.getItem('userData');
+        const { origines_id, sousclasses_id, sousraces_id } = props.route.params;
 
-            const { origines_id, sousclasses_id, sousraces_id } = props.route.params;
+        const newUrl = "https://zabalo.alwaysdata.net/sae401/api/personnages";
+        const data = { origines_id, sousclasses_id, sousraces_id, user_id, nom };
+        console.log(data)
 
-            if (!accessToken || !user_id) {
-                throw new Error("Access token or user ID is missing.");
-            }
-
-            const newUrl = "https://zabalo.alwaysdata.net/sae401/api/personnages";
-            const data = { origines_id, sousclasses_id, sousraces_id, user_id, nom };
-
-            const fetchOptions = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`
-                },
-                body: JSON.stringify(data)
-            };
-
-            const response = await fetch(newUrl, fetchOptions);
-            console.log('response status:', response.status);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const responseData = await response.json();
-            console.log('responseData:', responseData);
-
-            if (responseData.success) {
-                Alert.alert("Success", "Personnage créé avec succès.");
-                navigation.navigate('Profil');
-            } else {
-                Alert.alert("Erreur", "Erreur lors de la création du personnage.");
-            }
-        } catch (error) {
-            console.error('Error creating character:', error);
-            Alert.alert("Erreur", "Une erreur s'est produite lors de la création du personnage.");
-        }
+        const fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(data)
+        };
+        fetch(newUrl, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then(dataJSON => { console.log(dataJSON) })
+            .catch(error => {
+                console.log(error);
+            });
     };
 
 
