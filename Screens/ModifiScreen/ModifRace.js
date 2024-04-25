@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Card, Title } from "react-native-paper";
+import Race from "../../models/RaceController";
 
 export default function ModifRaces(props) {
     console.log(props.route.params.selectedRaceId)
@@ -35,30 +36,33 @@ export default function ModifRaces(props) {
             });
     }
 
-    //Changement de la race
-
-    const handleChangeRace = (event) => {
-        setSelectedRaceId(event.target.value);
-    };
-
     useEffect(() => {
-        const urlR = "https://zabalo.alwaysdata.net/sae401/api/races";
-        getRaces(urlR);
+        const url = "https://zabalo.alwaysdata.net/sae401/api/races";
+        getPersonnage(url);
     }, []);
 
-    function getRaces(urlR) {
-        const fetchOptions = {
-            method: "GET"
-        };
-        fetch(urlR, fetchOptions)
+    function getPersonnage(url) {
+        const fetchOptions = { method: "GET" };
+        fetch(url, fetchOptions)
             .then((response) => {
                 return response.json();
             })
-            .then(dataJSON => {
-                setRaces(dataJSON)
+            .then((dataJSON) => {
+                let races = dataJSON;
+                let l = [];
+                for (let r of races) {
+                    let race = new Race(
+                        r.id,
+                        r.nom,
+                        r.description,
+                        r.icone,
+                    );
+                    l.push(race);
+                }
+                setLPerso(l);
             })
             .catch((error) => {
-                console.error(error);
+                console.log(error);
             });
     }
 
@@ -68,7 +72,6 @@ export default function ModifRaces(props) {
 
     const renderItem = ({ item }) => {
         const isSelected = selectedItem === item.id;
-
 
         return (
             <Card style={styles.card}>
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         margin: 4,
+        backgroundColor: '#FFF',
     },
     checkboxButton: {
         flex: 1,
