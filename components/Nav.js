@@ -42,6 +42,8 @@ import Creation from '../Screens/CreationScreen/Creation';
 //Connexion et Incription
 import LoginScreen from '../Screens/LoginScreen/Login';
 import SignUp from '../Screens/LoginScreen/SignUp';
+import { useAuth } from '../LocalStorage/AuthContext';
+
 
 
 function AccueilScreen() {
@@ -58,19 +60,34 @@ function AccueilScreen() {
   )
 }
 
-function PersonnageScreen() {
+function PersonnageScreen({ navigation }) {
+  const { userToken } = useAuth();
   const Stack = createStackNavigator();
+
+  useEffect(() => {
+    if (!userToken) {
+      navigation.navigate('Login');
+    }
+  }, [userToken, navigation]);
+
   return (
     <Stack.Navigator initialRouteName='Race'>
-      <Stack.Screen name="Race" component={Race} options={{ headerShown: false }} />
-      <Stack.Screen name="SousRace" component={SousRace} />
-      <Stack.Screen name="Classe" component={Classes} />
-      <Stack.Screen name="SousClasse" component={SousClasses} />
-      <Stack.Screen name="Origine" component={Origines} />
-      <Stack.Screen name="Creation" component={Creation} />
+      {userToken ? (
+        <>
+          <Stack.Screen name="Race" component={Race} options={{ headerShown: false }} />
+          <Stack.Screen name="SousRace" component={SousRace} />
+          <Stack.Screen name="Classe" component={Classes} />
+          <Stack.Screen name="SousClasse" component={SousClasses} />
+          <Stack.Screen name="Origine" component={Origines} />
+          <Stack.Screen name="Creation" component={Creation} />
+        </>
+      ) : (
+        <Stack.Screen name="Login" component={LoginScreen} />
+      )}
     </Stack.Navigator>
-  )
+  );
 }
+
 
 function ProfilScreen() {
   const Stack = createStackNavigator();
