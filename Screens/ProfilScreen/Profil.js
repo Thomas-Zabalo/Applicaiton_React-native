@@ -17,28 +17,7 @@ function Profil({ navigation }) {
     const [nom, setEditedName] = useState('');
     const [email, setEditedEmail] = useState('');
 
-    const selectImage = () => {
-        const options = {
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-        };
-
-        launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                const source = { uri: response.uri };
-                console.log(source);
-            }
-        });
-    };
-
+   
     useFocusEffect(
         React.useCallback(() => {
             retrieveData();
@@ -139,7 +118,7 @@ function Profil({ navigation }) {
 
                     <View style={styles.profileImageContainer}>
                         <Image source={{ uri: user.icone }} style={styles.profileImage} />
-                        <Icon name="edit" size={24} color="white" style={styles.editIcon} onPress={selectImage} />
+                        {/* <Icon name="edit" size={24} color="white" style={styles.editIcon} onPress={selectImage} /> */}
                     </View>
 
                     <TextInput
@@ -149,7 +128,6 @@ function Profil({ navigation }) {
                         value={nom}
                         onChange={e => setEditedName(e.target.value)}
                         autoCapitalize="none"
-                        keyboardType="Nom d'utilisateur"
                         placeholder="Entrez votre nom d'utilisateur"
                         theme={inputTheme}
                         right={<TextInput.Icon icon='account-circle' color='white' style={{ marginTop: 14 }} />}
