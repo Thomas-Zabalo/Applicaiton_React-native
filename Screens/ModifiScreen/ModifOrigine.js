@@ -4,26 +4,53 @@ import { Card, Title } from "react-native-paper";
 import Origine from "./../../models/OrigineController"
 
 export default function ModifOrigines(props) {
+    console.log(props)
+    const id = props.route.params.id;
     const sousraces_id = props.route.params.sousraces_id;
     const sousclasses_id = props.route.params.sousclasses_id;
-
     const [lPerso, setLPerso] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState('');
 
-    const url = "https://zabalo.alwaysdata.net/sae401/api/origines";
+
+    //Affichage des informations du personnages
+    const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
+    useEffect(() => {
+        PersoUser(url);
+    }, [id]);
+
+
+    function PersoUser(url) {
+        const fetchOptions = {
+            method: "GET"
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then((dataJSON) => {
+                console.log(dataJSON)
+                setSelectedItem(dataJSON.origines_id)
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+
+
 
     useEffect(() => {
-        getPersonnage();
+        const url = "https://zabalo.alwaysdata.net/sae401/api/origines";
+        getPersonnage(url);
     }, []);
 
-    function getPersonnage() {
+    function getPersonnage(url) {
         const fetchOptions = { method: "GET" };
         fetch(url, fetchOptions)
             .then((response) => {
                 return response.json();
             })
             .then((dataJSON) => {
-                // console.log(dataJSON)
                 let origines = dataJSON;
                 let l = [];
                 for (let sr of origines) {
@@ -51,15 +78,21 @@ export default function ModifOrigines(props) {
 
         return (
             <Card style={styles.card}>
-                <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-                <Card.Content>
-                    <Title style={{ fontSize: 14 }}>{item.nom}</Title>
-                </Card.Content>
+                {isSelected ? (
+                    // Afficher la description si la carte est sélectionnée
+                    <Card.Content>
+                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
+                    </Card.Content>
+                ) : (
+                    // Sinon, afficher l'image
+                    <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
+                )}
                 <Card.Actions>
                     <TouchableOpacity
                         style={[styles.checkboxButton, isSelected && styles.selectedButton]}
                         onPress={() => toggleSelect(item.id)}>
-                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir cette race'}</Text>
+                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
                     </TouchableOpacity>
                 </Card.Actions>
             </Card>
@@ -80,7 +113,7 @@ export default function ModifOrigines(props) {
                     <TouchableOpacity
                         style={styles.bouton}
                         onPress={() => {
-                            props.navigation.navigate("Creation", { sousraces_id, origines_id: selectedItem, sousclasses_id });
+                            props.navigation.navigate("Creation", { origines_id: selectedItem, sousclasses_id: sousclasses_id, sousraces_id: sousraces_id, id: id });
                         }}>
                         <Text style={styles.boutonText}>Suivant</Text>
                     </TouchableOpacity>
@@ -89,7 +122,6 @@ export default function ModifOrigines(props) {
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {

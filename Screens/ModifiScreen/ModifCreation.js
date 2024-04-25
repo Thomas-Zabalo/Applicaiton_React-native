@@ -1,50 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TextInput, Button, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Personnage from "../../models/PersonnageController";
 
 export default function ModifCreation(props) {
+    console.log(props)
+    const id = props.route.params.id;
+    const sousraces_id = props.route.params.sousraces_id;
+    const sousclasses_id = props.route.params.sousclasses_id;
+    const origines_id = props.route.params.origines_id;
     const [nom, setNom] = useState("");
-
     const handleNomChange = (value) => setNom(value);
 
-    const createPersonnage = async () => {
-        try {
-            const accessToken = await AsyncStorage.getItem('@UserData:accessToken');
-            const user_id = await AsyncStorage.getItem('@UserData:user_id');
-            const { origines_id, sousclasses_id, sousraces_id } = props.route.params;
-            if (!accessToken || !user_id) {
-                throw new Error("Access token or user ID is missing.");
-            }
 
-            const newUrl = "https://zabalo.alwaysdata.net/sae401/api/personnages";
-            const data = { origines_id, sousclasses_id, sousraces_id, user_id, nom };
+    const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
+    useEffect(() => {
+        PersoUser(url);
+    }, [id]);
 
-            const fetchOptions = {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`
-                },
-                body: JSON.stringify(data)
-            }; 
 
-            const response = await fetch(newUrl, fetchOptions);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    function PersoUser(url) {
+        const fetchOptions = {
+            method: "GET"
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then((dataJSON) => {
+                console.log(dataJSON)
+                setNom(dataJSON.nom)
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
-            const responseData = await response.json();
-            if (responseData.success) {
-                Alert.alert("Success", "Personnage créé avec succès.");
-            } else {
-                Alert.alert("Erreur", "Erreur lors de la création du personnage.");
-            }
-        } catch (error) {
-            console.error('Error creating character:', error);
-            Alert.alert("Erreur", "Une erreur s'est produite lors de la création du personnage.");
+    const handleSubmit = async () => {
+        const accessToken = await AsyncStorage.getItem('userToken');
+        if (nom !== '') {
+            const persoData = {
+                sousraces_id: sousraces_id,
+                origines_id: origines_id,
+                sousclasses_id: sousclasses_id,
+                nom: nom
+            };
+            console.log(persoData)
+            const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
+            modifPerso(url, persoData, accessToken);
+        } else {
+            Alert.alert("Veuillez entrer un nom pour le personnage.");
         }
     };
+
+    const modifPerso = (url, persoData, accessToken) => {
+        console.log(url, persoData, accessToken)
+        const fetchOptions = {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(persoData)
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then(dataJSON => {
+                console.log(dataJSON)
+                props.navigation.navigate("Profil")
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+
+
 
     return (
         <View style={styles.container}>
@@ -55,8 +88,8 @@ export default function ModifCreation(props) {
                 placeholder="Nom du personnage"
             />
             <Button
-                title="Créer Personnage"
-                onPress={createPersonnage}
+                title="Modifier mon personnage"
+                onPress={handleSubmit}
             />
         </View>
     );

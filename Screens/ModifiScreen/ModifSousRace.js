@@ -4,17 +4,41 @@ import { Card, Title } from "react-native-paper";
 import SousRace from "./../../models/SousRaceController"
 
 export default function ModifSousRaces(props) {
-    const id = props.route.params.id;
+    const id = props.route.params.id
+    const race = props.route.params.race
     const [lPerso, setLPerso] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState('');
 
-    const url = "https://zabalo.alwaysdata.net/sae401/api/races/" + id;
+    //Affichage des informations du personnages
+    const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
+    useEffect(() => {
+        PersoUser(url);
+    }, [id]);
+
+
+    function PersoUser(url) {
+        const fetchOptions = {
+            method: "GET"
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then((dataJSON) => {
+                console.log(dataJSON)
+                setSelectedItem(dataJSON.sousraces_id)
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
     useEffect(() => {
-        getPersonnage();
+        const url = `https://zabalo.alwaysdata.net/sae401/api/races/${race}`;
+        getPersonnage(url);
     }, []);
 
-    function getPersonnage() {
+    function getPersonnage(url) {
         const fetchOptions = { method: "GET" };
         fetch(url, fetchOptions)
             .then((response) => {
@@ -40,24 +64,32 @@ export default function ModifSousRaces(props) {
             });
     }
 
-    const toggleSelect = (itemId) => {
+    function toggleSelect(itemId) {
         setSelectedItem(itemId);
-    };
+    }
+
+    console.log(selectedItem)
 
     const renderItem = ({ item }) => {
         const isSelected = selectedItem === item.id;
 
         return (
             <Card style={styles.card}>
-                <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-                <Card.Content>
-                    <Title style={{ fontSize: 14 }}>{item.nom}</Title>
-                </Card.Content>
+                {isSelected ? (
+                    // Afficher la description si la carte est sélectionnée
+                    <Card.Content>
+                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
+                    </Card.Content>
+                ) : (
+                    // Sinon, afficher l'image
+                    <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
+                )}
                 <Card.Actions>
                     <TouchableOpacity
                         style={[styles.checkboxButton, isSelected && styles.selectedButton]}
                         onPress={() => toggleSelect(item.id)}>
-                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir cette race'}</Text>
+                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
                     </TouchableOpacity>
                 </Card.Actions>
             </Card>
@@ -78,7 +110,7 @@ export default function ModifSousRaces(props) {
                     <TouchableOpacity
                         style={styles.bouton}
                         onPress={() => {
-                            props.navigation.navigate("Classe", { sousraces_id: selectedItem });
+                            props.navigation.navigate("Classe", { sousraces_id: selectedItem, id: id });
                         }}>
                         <Text style={styles.boutonText}>Suivant</Text>
                     </TouchableOpacity>
@@ -87,7 +119,6 @@ export default function ModifSousRaces(props) {
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {

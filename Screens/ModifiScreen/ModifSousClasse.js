@@ -6,16 +6,42 @@ import SousClasse from "../../models/SousClasseController";
 export default function ModifSousClasses(props) {
     const id = props.route.params.id;
     const sousraces_id = props.route.params.sousraces_id;
+    const classe = props.route.params.classe_id;
     const [lPerso, setLPerso] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState('');
 
-    const url = "https://zabalo.alwaysdata.net/sae401/api/classes/" + id;
+
+    //Affichage des informations du personnages
+    const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
+    useEffect(() => {
+        PersoUser(url);
+    }, [id]);
+
+
+    function PersoUser(url) {
+        const fetchOptions = {
+            method: "GET"
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then((dataJSON) => {
+                console.log(dataJSON)
+                setSelectedItem(dataJSON.sousclasses_id)
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
 
     useEffect(() => {
-        getClasses();
+        const url = `https://zabalo.alwaysdata.net/sae401/api/classes/${classe}`;
+        getClasses(url);
     }, []);
 
-    function getClasses() {
+    function getClasses(url) {
         const fetchOptions = { method: "GET" };
         fetch(url, fetchOptions)
             .then((response) => {
@@ -50,21 +76,26 @@ export default function ModifSousClasses(props) {
 
         return (
             <Card style={styles.card}>
-                <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-                <Card.Content>
-                    <Title style={{ fontSize: 14 }}>{item.nom}</Title>
-                </Card.Content>
+                {isSelected ? (
+                    // Afficher la description si la carte est sélectionnée
+                    <Card.Content>
+                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
+                    </Card.Content>
+                ) : (
+                    // Sinon, afficher l'image
+                    <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
+                )}
                 <Card.Actions>
                     <TouchableOpacity
                         style={[styles.checkboxButton, isSelected && styles.selectedButton]}
                         onPress={() => toggleSelect(item.id)}>
-                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir cette race'}</Text>
+                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
                     </TouchableOpacity>
                 </Card.Actions>
             </Card>
         );
     };
-
 
     return (
         <View style={styles.container}>
@@ -80,12 +111,11 @@ export default function ModifSousClasses(props) {
                     <TouchableOpacity
                         style={styles.bouton}
                         onPress={() => {
-                            props.navigation.navigate("Origine", { sousclasses_id: selectedItem, sousraces_id });
+                            props.navigation.navigate("Origine", { sousclasses_id: selectedItem, sousraces_id: sousraces_id, id: id });
                         }}>
                         <Text style={styles.boutonText}>Suivant</Text>
                     </TouchableOpacity>
                 </View>
-
             )}
         </View>
     );

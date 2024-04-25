@@ -4,11 +4,9 @@ import { Card, Title } from "react-native-paper";
 import Race from "../../models/RaceController";
 
 export default function ModifRaces(props) {
-    console.log(props.route.params.selectedRaceId)
-    const id = props.route.params.selectedRaceId
+    const id = props.route.params.id
     const [lPerso, setLPerso] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [races, setRaces] = useState([]);
+    const [selectedItem, setSelectedItem] = useState('');
 
     //Affichage des informations du personnages
     const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
@@ -27,9 +25,7 @@ export default function ModifRaces(props) {
             })
             .then((dataJSON) => {
                 console.log(dataJSON)
-                // setNom(dataJSON.nom)
-                // setLPerso(dataJSON);
-                // setSelectedRaceId(dataJSON.sousraces.races_id);
+                setSelectedItem(dataJSON.sousraces.races_id)
             })
             .catch((error) => {
                 console.error(error);
@@ -69,6 +65,8 @@ export default function ModifRaces(props) {
     const toggleSelect = (itemId) => {
         setSelectedItem(itemId);
     };
+
+    console.log(selectedItem)
 
     const renderItem = ({ item }) => {
         const isSelected = selectedItem === item.id;
@@ -110,7 +108,7 @@ export default function ModifRaces(props) {
                     <TouchableOpacity
                         style={styles.bouton}
                         onPress={() => {
-                            navigation.navigate("SousRace", { id: selectedItem });
+                            props.navigation.navigate("SousRace", { race: selectedItem, id: id });
                         }}>
                         <Text style={styles.boutonText}>Suivant</Text>
                     </TouchableOpacity>

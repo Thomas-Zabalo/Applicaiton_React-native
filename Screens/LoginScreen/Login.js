@@ -54,9 +54,6 @@ export default function LoginScreen({ navigation }) {
                 return response.json();
             })
             .then((dataJSON) => {
-                console.log(dataJSON.accessToken)
-                console.log(dataJSON.admin)
-                console.log(dataJSON.user_id)
                 const accessToken = dataJSON.accessToken
                 const delimiterIndex = accessToken.indexOf('|');
                 if (delimiterIndex !== -1) {

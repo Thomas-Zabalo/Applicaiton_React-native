@@ -83,7 +83,7 @@ export default function PersoUser({ navigation, route }) {
 
     // Fonction pour modifier un personnage
     const handleModification = (personnage) => {
-        navigation.navigate("Race", { selectedRaceId: personnage.id });
+        navigation.navigate("Race", { id: personnage.id });
     };
 
 
