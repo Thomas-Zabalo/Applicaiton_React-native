@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import User from "../../models/UserController";
+import { useAuth } from '../../LocalStorage/AuthContext';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function LoginScreen({ navigation }) {
-
+    const { login } = useAuth();
     const url = `https://zabalo.alwaysdata.net/sae401/api/login`;
 
     const [email, setEmail] = useState("");
@@ -19,43 +19,37 @@ export default function LoginScreen({ navigation }) {
 
     const handleLogin = () => {
         if (email !== '' && password !== '') {
-            let u = new User(email, password);
-            getUtilisateur(u);
+            const userData = {
+                email: email,
+                password: password
+            };
+            loginUser(userData);
         }
     };
 
-    useEffect(() => {
-        getUtilisateur();
-    }, []);
+    // const storeData = async (accessToken, user_id, user_admin) => {
+    //     try {
+    //         await AsyncStorage.setItem('userToken', accessToken);
+    //         await AsyncStorage.setItem('userData', user_id);
+    //         await AsyncStorage.setItem('userAdmin', user_admin);
+    //         console.log(accessToken, user_id, user_admin)
+    //     } catch (error) {
+    //         console.error('Erreur lors de la sauvegarde des données:', error);
+    //     }
+    // };
 
-    let body = {
-        email: email,
-        password: password
-    }
-
-    const storeData = async (accessToken, user_id, user_admin) => {
-        try {
-            await AsyncStorage.setItem('userToken', accessToken);
-            await AsyncStorage.setItem('userData', user_id);
-            await AsyncStorage.setItem('userAdmin', user_admin);
-            console.log(accessToken, user_id, user_admin)
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde des données:', error);
-        }
-    };
-
-    function getUtilisateur() {
+    function loginUser(userData) {
         const fetchOptions = {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(userData)
         };
         fetch(url, fetchOptions)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error('Réponse réseau non OK');
+                    throw new Error('Erreur lors de la connexion');
                 }
                 return response.json();
             })
@@ -63,11 +57,12 @@ export default function LoginScreen({ navigation }) {
                 console.log(dataJSON.accessToken)
                 console.log(dataJSON.admin)
                 console.log(dataJSON.user_id)
-                const delimiterIndex = dataJSON.accessToken.indexOf('|');
+                const accessToken = dataJSON.accessToken
+                const delimiterIndex = accessToken.indexOf('|');
                 if (delimiterIndex !== -1) {
-                    const token = dataJSON.accessToken.substring(delimiterIndex + 1);
-                    storeData(token, dataJSON.user_id.toString(), dataJSON.admin.toString());
-                    console.log(storeData)
+                    const partAfterDelimiter = accessToken.substring(delimiterIndex + 1);
+                    login(partAfterDelimiter, dataJSON.user_id, dataJSON.admin);
+                    console.log(login)
                     // navigation.navigate('Home');
                 } else {
                     console.log('Delimiter "|" not found in accessToken');

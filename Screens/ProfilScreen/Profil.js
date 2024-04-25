@@ -1,15 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Button, Image, Dimensions, Modal, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useAuth } from '../../LocalStorage/AuthContext';
+
+import { launchImageLibrary } from 'react-native-image-picker';
 
 function Profil({ navigation }) {
+    const { userAdmin, userToken, logout } = useAuth();
+    const accessToken = userToken;
+
     const [user, setUser] = useState(null);
-    const [editedName, setEditedName] = useState('');
-    const [editedEmail, setEditedEmail] = useState('');
+    const [nom, setEditedName] = useState('');
+    const [email, setEditedEmail] = useState('');
+
+    const selectImage = () => {
+        const options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                const source = { uri: response.uri };
+                console.log(source);
+            }
+        });
+    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -60,31 +88,37 @@ function Profil({ navigation }) {
             });
     }
 
-    const logout = async () => {
-        try {
-            const accessToken = await AsyncStorage.getItem('userToken');
-            const fetchOptions = {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            };
-            const response = await fetch('https://zabalo.alwaysdata.net/sae401/api/logout', fetchOptions);
-            if (response.ok) {
-                await AsyncStorage.removeItem('userToken');
-                await AsyncStorage.removeItem('userData');
-                await AsyncStorage.removeItem('userAdmin');
 
-                setUser(null);
-                navigation.navigate('Home', { screen: 'Home' });
-            } else {
-                console.error('Erreur lors de la déconnexion:', response.statusText);
+    const url = "https://zabalo.alwaysdata.net/sae401/api/logout";
+
+    function deconnexion() {
+
+        const fetchOptions = {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`
             }
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion:', error);
-        }
+        };
+        fetch(url, fetchOptions)
+            .then((response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la déconnexion');
+                }
+                return response.json();
+            })
+            .then((dataJSON) => {
+                console.log(dataJSON);
+                navigation.navigate('Home', { screen: 'Home' });
+                logout();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
 
-    }; const dismissKeyboard = () => {
+
+    const dismissKeyboard = () => {
         Keyboard.dismiss();
     };
 
@@ -92,72 +126,80 @@ function Profil({ navigation }) {
 
         <View style={styles.container} onPress={dismissKeyboard}>
 
-
             {user && (
                 <View style={styles.profileContainer}>
                     <Icon
                         name="exit-to-app"
                         size={30}
                         color="#f44336"
-                        onPress={logout}
+                        onPress={deconnexion}
                         style={styles.logoutIcon}
                     />
                     <Text style={styles.title}>Mon profil</Text>
-                    <View style={styles.profileContainer}>
+
+                    <View style={styles.profileImageContainer}>
                         <Image source={{ uri: user.icone }} style={styles.profileImage} />
-                        <TextInput
-                            label="Email"
-                            mode="outlined"
-                            style={styles.input}
-                            value={user.email}
-                            // onChangeText={handleEmailChange}
-                            autoCapitalize="none"
-                            keyboardType="email-address"
-                            placeholder="Entrez votre email"
-                            theme={inputTheme}
-                            right={<TextInput.Icon icon='account-circle' color='white' style={{ marginTop: 14 }} />}
-                        />
-                        <TextInput
-                            label="Email"
-                            mode="outlined"
-                            style={styles.input}
-                            value={user.name}
-                            // onChangeText={handleEmailChange}
-                            autoCapitalize="none"
-                            keyboardType="Nom d'utilisateur"
-                            placeholder="Entrez votre nom d'utilisateur"
-                            theme={inputTheme}
-                            right={<TextInput.Icon icon='email' color='white' style={{ marginTop: 14 }} />}
-                        />
-                        <Text style={styles.characterCount}>Nombre de personnages: {user.personnages.length}</Text>
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => navigation.navigate('Mes personnages', { userId: user.id })}
-                            disabled={user.personnages.length === 0}
-                        >
-                            <Text style={styles.buttonText}>Modifier</Text>
-                        </TouchableOpacity>
+                        <Icon name="edit" size={24} color="white" style={styles.editIcon} onPress={selectImage} />
                     </View>
-                </View>
-            )}
-            {!user && (
-                <View style={styles.container}>
-                    <Text style={styles.title}>Connectez-vous ou inscrivez-vous</Text>
+
+                    <TextInput
+                        label="Nom"
+                        mode="outlined"
+                        style={styles.input}
+                        value={nom}
+                        onChange={e => setEditedName(e.target.value)}
+                        autoCapitalize="none"
+                        keyboardType="Nom d'utilisateur"
+                        placeholder="Entrez votre nom d'utilisateur"
+                        theme={inputTheme}
+                        right={<TextInput.Icon icon='account-circle' color='white' style={{ marginTop: 14 }} />}
+                    />
+                    <TextInput
+                        label="Email"
+                        mode="outlined"
+                        style={styles.input}
+                        value={email}
+                        onChange={e => setEditedEmail(e.target.value)}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        placeholder="Entrez votre email"
+                        theme={inputTheme}
+                        right={<TextInput.Icon icon='email' color='white' style={{ marginTop: 14 }} />}
+                    />
+
+
+                    <Text style={styles.characterCount}>Nombre de personnages: {user.personnages.length}</Text>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => navigation.navigate('Login')}
+                        onPress={() => navigation.navigate('Mes personnages', { userId: user.id })}
+                        disabled={user.personnages.length === 0}
                     >
-                        <Text style={styles.buttonText}>Se connecter</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.button, styles.signupButton]}
-                        onPress={() => navigation.navigate('Inscription')}
-                    >
-                        <Text style={styles.buttonText}>S'inscrire</Text>
+                        <Text style={styles.buttonText}>Modifier</Text>
                     </TouchableOpacity>
                 </View>
-            )}
-        </View>
+            )
+            }
+            {
+                !user && (
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Connectez-vous ou inscrivez-vous</Text>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate('Login')}
+                        >
+                            <Text style={styles.buttonText}>Se connecter</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.button, styles.signupButton]}
+                            onPress={() => navigation.navigate('Inscription')}
+                        >
+                            <Text style={styles.buttonText}>S'inscrire</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+        </View >
+
     );
 }
 
@@ -181,6 +223,57 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#141218',
+    },
+    profileImageContainer: {
+        position: 'relative',
+    },
+    editIcon: {
+        position: 'absolute',
+        right: 5,
+        bottom: 5,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        borderRadius: 12,
+        padding: 5,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalImage: {
+        width: 100,
+        height: 100,
+        marginHorizontal: 10,
+        borderRadius: 10,
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
     },
     roundedBottom: {
         width: '100%',

@@ -83,9 +83,9 @@ export default function PersoUser({ navigation, route }) {
 
     // Fonction pour modifier un personnage
     const handleModification = (personnage) => {
-        navigation.navigate("Race", { selectedRaceId: personnage.sousraces_id });
+        navigation.navigate("Race", { selectedRaceId: personnage.id });
     };
-    
+
 
     // Fonction pour supprimer effectivement le personnage
     const supprimerPersonnage = async (id) => {
@@ -135,11 +135,9 @@ export default function PersoUser({ navigation, route }) {
                         <Card.Actions>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => {
-                                    navigation.navigate('Detail de mon personnage', { id: item.id });
-                                }}
+                                onPress={() => navigation.navigate('Detail de mon personnage', { id: item.id })}
                             >
-                                <Text style={styles.buttonText}>Details</Text>
+                                <Text style={styles.buttonText}>Détails</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity

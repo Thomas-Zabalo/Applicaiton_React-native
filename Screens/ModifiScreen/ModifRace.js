@@ -1,40 +1,64 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Card, Title } from "react-native-paper";
-import Race from "../../models/RaceController";
 
-export default function ModifRaces({ navigation }) {
+export default function ModifRaces(props) {
+    console.log(props.route.params.selectedRaceId)
+    const id = props.route.params.selectedRaceId
     const [lPerso, setLPerso] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [races, setRaces] = useState([]);
 
-    const url = "https://zabalo.alwaysdata.net/sae401/api/races";
-
+    //Affichage des informations du personnages
+    const url = `https://zabalo.alwaysdata.net/sae401/api/personnages/${id}`;
     useEffect(() => {
-        getPersonnage();
-    }, []);
+        PersoUser(url);
+    }, [id]);
 
-    function getPersonnage() {
-        const fetchOptions = { method: "GET" };
+
+    function PersoUser(url) {
+        const fetchOptions = {
+            method: "GET"
+        };
         fetch(url, fetchOptions)
             .then((response) => {
                 return response.json();
             })
             .then((dataJSON) => {
-                let races = dataJSON;
-                let l = [];
-                for (let r of races) {
-                    let race = new Race(
-                        r.id,
-                        r.nom,
-                        r.description,
-                        r.icone,
-                    );
-                    l.push(race);
-                }
-                setLPerso(l);
+                console.log(dataJSON)
+                // setNom(dataJSON.nom)
+                // setLPerso(dataJSON);
+                // setSelectedRaceId(dataJSON.sousraces.races_id);
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
+            });
+    }
+
+    //Changement de la race
+
+    const handleChangeRace = (event) => {
+        setSelectedRaceId(event.target.value);
+    };
+
+    useEffect(() => {
+        const urlR = "https://zabalo.alwaysdata.net/sae401/api/races";
+        getRaces(urlR);
+    }, []);
+
+    function getRaces(urlR) {
+        const fetchOptions = {
+            method: "GET"
+        };
+        fetch(urlR, fetchOptions)
+            .then((response) => {
+                return response.json();
+            })
+            .then(dataJSON => {
+                setRaces(dataJSON)
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -45,17 +69,24 @@ export default function ModifRaces({ navigation }) {
     const renderItem = ({ item }) => {
         const isSelected = selectedItem === item.id;
 
+
         return (
             <Card style={styles.card}>
-                <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-                <Card.Content>
-                    <Title style={{ fontSize: 14 }}>{item.nom}</Title>
-                </Card.Content>
+                {isSelected ? (
+                    // Afficher la description si la carte est sélectionnée
+                    <Card.Content>
+                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
+                    </Card.Content>
+                ) : (
+                    // Sinon, afficher l'image
+                    <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
+                )}
                 <Card.Actions>
                     <TouchableOpacity
                         style={[styles.checkboxButton, isSelected && styles.selectedButton]}
                         onPress={() => toggleSelect(item.id)}>
-                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir cette race'}</Text>
+                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
                     </TouchableOpacity>
                 </Card.Actions>
             </Card>

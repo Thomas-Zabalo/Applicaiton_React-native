@@ -32,11 +32,11 @@ export const AuthProvider = ({ children }) => {
         try {
             await AsyncStorage.setItem('userToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            await AsyncStorage.setItem('userAdmin', admin.toString());
+            await AsyncStorage.setItem('userAdmin', admin);
 
             setUserToken(token);
             setUserData(userData);
-            setUserAdmin(admin.toString());
+            setUserAdmin(admin);
         } catch (error) {
             console.error('Error saving authentication data:', error);
         }
