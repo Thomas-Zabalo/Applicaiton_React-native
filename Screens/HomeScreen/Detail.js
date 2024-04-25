@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-// import Personnage from "../../models/PersonnageController";
-import { List } from "react-native-paper";
+import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
+import { Card, Avatar } from 'react-native-paper';
 
 function Detail(props) {
     console.log(props)
@@ -30,91 +29,117 @@ function Detail(props) {
     return (
         <ScrollView style={styles.container}>
             {lPerso && (
-                <List.Section>
-                    <List.Accordion title="Origine">
-                        <List.Item
-                            title={lPerso.origines.nom}
-                            description={lPerso.origines.description}
-                            titleStyle={styles.nom}
-                            descriptionStyle={styles.description}
-                        />
-                    </List.Accordion>
+                <>
+                    <Text style={styles.title}>{lPerso.nom} - Créé par {lPerso.user.name}</Text>
+                    <View style={styles.detailContainer}>
 
-                    <List.Accordion title="Classe">
-                        <List.Item
-                            title={lPerso.sousclasses.classes.nom}
-                            description={lPerso.sousclasses.classes.description}
-                            titleStyle={styles.nom}
-                            descriptionStyle={styles.description}
-                        />
-                    </List.Accordion>
-
-                    <List.Accordion title="Sous Classe">
-                        <List.Item
-                            title={lPerso.sousclasses.nom}
-                            description={lPerso.sousclasses.description}
-                            titleStyle={styles.nom}
-                            descriptionStyle={styles.description}
-                        />
-                    </List.Accordion>
-
-                    <List.Accordion title="Race">
-                        <List.Item
-                            title={lPerso.sousraces.races.nom}
-                            description={lPerso.sousraces.races.description}
-                            titleStyle={styles.nom}
-                            descriptionStyle={styles.description}
-                        />
-                    </List.Accordion>
-
-                    {lPerso.sousraces.races.nom !== lPerso.sousraces.nom && (
-                        <List.Accordion title="Sous Race">
-                            <List.Item
-                                title={lPerso.sousraces.nom}
-                                description={lPerso.sousraces.description}
-                                titleStyle={styles.nom}
-                                descriptionStyle={styles.description}
+                        <Card style={styles.card}>
+                            <Card.Title
+                                title="Race"
+                                subtitle={lPerso.sousraces.races.nom}
+                                left={(props) => <Avatar.Image {...props} source={{ uri: lPerso.sousraces.races.icone }} size={48} />}
+                                titleStyle={styles.cardTitle}
+                                subtitleStyle={styles.cardSubtitle}
                             />
-                        </List.Accordion>
-                    )}
+                            <Card.Content>
+                                <Text style={styles.cardContentText}>{lPerso.sousraces.races.description}</Text>
+                            </Card.Content>
+                        </Card>
+                        {lPerso.sousraces.races.nom !== lPerso.sousraces.nom && (
+                            <Card style={styles.card}>
+                                <Card.Title
+                                    title="Sous Race"
+                                    subtitle={lPerso.sousraces.nom}
+                                    left={(props) => <Avatar.Image {...props} source={{ uri: lPerso.sousraces.icone }} size={48} />}
+                                    titleStyle={styles.cardTitle}
+                                    subtitleStyle={styles.cardSubtitle}
+                                />
+                                <Card.Content>
+                                    <Text style={styles.cardContentText}>{lPerso.sousraces.description}</Text>
+                                </Card.Content>
+                            </Card>
+                        )}
 
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((niveau) => (
-                        <List.Accordion key={niveau} title={`Niveau ${niveau}`}>
-                            <List.Item
-                                title={lPerso.sousraces.races.nom}
-                                description={lPerso.sousraces.races.description}
-                                titleStyle={styles.nom}
-                                descriptionStyle={styles.description}
+                        <Card style={styles.card}>
+                            <Card.Title
+                                title="Classe"
+                                subtitle={lPerso.origines.nom}
+                                left={(props) => <Avatar.Image {...props} source={{ uri: lPerso.sousclasses.classes.icone }} size={48} />}
+                                titleStyle={styles.cardTitle}
+                                subtitleStyle={styles.cardSubtitle}
                             />
-                        </List.Accordion>
-                    ))}
-                </List.Section>
+                            <Card.Content>
+                                <Text style={styles.cardContentText}>{lPerso.sousclasses.classes.description}</Text>
+                            </Card.Content>
+                        </Card>
+
+                        <Card style={styles.card}>
+                            <Card.Title
+                                title="Sous Classe"
+                                subtitle={lPerso.sousclasses.nom}
+                                left={(props) => <Avatar.Image {...props} source={{ uri: lPerso.sousclasses.icone }} size={48} />}
+                                titleStyle={styles.cardTitle}
+                                subtitleStyle={styles.cardSubtitle}
+                            />
+                            <Card.Content>
+                                <Text style={styles.cardContentText}>{lPerso.sousclasses.description}</Text>
+                            </Card.Content>
+                        </Card>
+
+                        <Card style={styles.card}>
+                            <Card.Title
+                                title="Origine"
+                                subtitle={lPerso.origines.nom}
+                                left={(props) => <Avatar.Image {...props} source={{ uri: lPerso.origines.icone }} size={48} />}
+                                titleStyle={styles.cardTitle}
+                                subtitleStyle={styles.cardSubtitle}
+                            />
+                            <Card.Content>
+                                <Text style={styles.cardContentText}>{lPerso.origines.description}</Text>
+                            </Card.Content>
+                        </Card>
+                    </View>
+                </>
             )}
         </ScrollView>
     );
 }
-export default Detail;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        backgroundColor: "#141218",
+        paddingHorizontal: 10,
+        paddingVertical: 20,
+        backgroundColor: '#141218',
     },
-    nom: {
+    title: {
         fontSize: 24,
-        paddingTop: 8,
-        color: "white",
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 20,
+        textAlign: 'center',
     },
-    descriptionContainer: {
-        paddingHorizontal: 24,
-        paddingVertical: 8,
-        marginBottom: 20, // Augmenter la marge inférieure pour éviter le chevauchement avec le contenu suivant
+    detailContainer: {
+        padding: 8,
     },
-    description: {
-        fontSize: 16,
-        color: "white",
+    card: {
+        backgroundColor: '#FFF',
+        margin: 10,
+        borderRadius: 8,
     },
+    cardTitle: {
+        marginLeft: 16,
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
+    cardSubtitle: {
+        marginLeft: 16,
+        fontSize: 16
+    },
+    cardContentText: {
+        fontSize: 14,
+        marginTop: 8
+    }
 });
 
+export default Detail;

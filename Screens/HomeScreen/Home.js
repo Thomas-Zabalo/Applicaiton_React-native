@@ -17,15 +17,15 @@ function HomeScreen(props) {
         setNom('')
     };
 
-    const handleLogout = async () => {
-        try {
-            await logout(); // Appel de la fonction logout
-            console.log('Déconnexion réussie');
-            // Vous pouvez ici rediriger l'utilisateur vers l'écran de connexion
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion:', error);
-        }
-    };
+    // const handleLogout = async () => {
+    //     try {
+    //         await logout(); // Appel de la fonction logout
+    //         console.log('Déconnexion réussie');
+    //         // Vous pouvez ici rediriger l'utilisateur vers l'écran de connexion
+    //     } catch (error) {
+    //         console.error('Erreur lors de la déconnexion:', error);
+    //     }
+    // };
 
     return (
         <ScrollView style={styles.container}>
@@ -54,9 +54,6 @@ function HomeScreen(props) {
                     <Card.Cover source={{ uri: "https://images6.alphacoders.com/133/1331323.jpeg" }} />
                 </Card>
             </View>
-            <TouchableOpacity onPress={handleLogout} style={styles.button}>
-                <Text style={styles.link}>Voir plus</Text>
-            </TouchableOpacity>
             <View style={styles.section}>
                 <Text style={styles.heading}>Communauté</Text>
                 <View style={styles.row}>

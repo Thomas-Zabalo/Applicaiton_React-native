@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, TextInput, Button, Alert } from "react-native";
+import { StyleSheet, View, TextInput, TouchableOpacity, Alert, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -37,17 +37,18 @@ export default function Creation(props) {
 
 
     return (
+
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
                 onChangeText={handleNomChange}
                 value={nom}
                 placeholder="Nom du personnage"
+                placeholderTextColor="#ccc"
             />
-            <Button
-                title="Créer Personnage"
-                onPress={createPersonnage}
-            />
+            <TouchableOpacity style={styles.button} onPress={createPersonnage}>
+                <Text style={styles.buttonText}>Créer mon personnage</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -55,15 +56,33 @@ export default function Creation(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 8,
-        paddingVertical: 8,
-        backgroundColor: "#fff",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#141218",
     },
     input: {
-        height: 40,
-        borderColor: 'gray',
+        height: 50,
+        width: '80%',
+        borderColor: '#D0BCFF',
         borderWidth: 1,
-        marginBottom: 10,
-        paddingHorizontal: 10,
+        marginBottom: 20,
+        paddingHorizontal: 15,
+        borderRadius: 25,
+        fontSize: 18,
+        color: "white",
+        backgroundColor: '#282c34',
     },
+    button: {
+        backgroundColor: '#D0BCFF',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 25,
+    },
+    buttonText: {
+        fontSize: 16,
+        color: 'white',
+        fontWeight: 'bold',
+    }
 });
+
+

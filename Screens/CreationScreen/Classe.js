@@ -37,12 +37,14 @@ export default function Classes(props) {
         return (
             <Card style={styles.card}>
                 {isSelected ? (
+                    // Afficher la description si la carte est sélectionnée
                     <Card.Content>
-                        <Title>{item.nom}</Title>
-                        <Text>{item.description}</Text>
+                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
                     </Card.Content>
                 ) : (
-                    <Card.Cover source={{ uri: item.icone }} />
+                    // Sinon, afficher l'image
+                    <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
                 )}
                 <Card.Actions>
                     <TouchableOpacity
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         margin: 4,
+        backgroundColor: '#FFF',
     },
     checkboxButton: {
         flex: 1,

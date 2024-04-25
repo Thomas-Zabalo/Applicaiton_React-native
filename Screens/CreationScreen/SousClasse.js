@@ -44,22 +44,24 @@ export default function SousClasses(props) {
 
         return (
             <Card style={styles.card}>
-                {isSelected ? (
-                    <Card.Content>
-                        <Title style={{ fontSize: 16 }}>{item.nom}</Title>
-                        <Text style={{ fontSize: 14 }}>{item.description}</Text>
-                    </Card.Content>
-                ) : (
-                    <Card.Cover source={{ uri: item.icone }} />
-                )}
-                <Card.Actions>
-                    <TouchableOpacity
-                        style={[styles.checkboxButton, isSelected && styles.selectedButton]}
-                        onPress={() => toggleSelect(item.id)}>
-                        <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
-                    </TouchableOpacity>
-                </Card.Actions>
-            </Card>
+            {isSelected ? (
+                // Afficher la description si la carte est sélectionnée
+                <Card.Content>
+                    <Title style={{ fontSize: 16 }}>{item.nom}</Title>
+                    <Text style={{ fontSize: 14 }}>{item.description}</Text>
+                </Card.Content>
+            ) : (
+                // Sinon, afficher l'image
+                <Card.Cover source={{ uri: item.icone }} style={{ backgroundColor: 'black' }} />
+            )}
+            <Card.Actions>
+                <TouchableOpacity
+                    style={[styles.checkboxButton, isSelected && styles.selectedButton]}
+                    onPress={() => toggleSelect(item.id)}>
+                    <Text style={styles.buttonText}>{isSelected ? '✓' : 'Choisir'}</Text>
+                </TouchableOpacity>
+            </Card.Actions>
+        </Card>
         );
     };
 
@@ -97,6 +99,7 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         margin: 4,
+        backgroundColor: '#FFF',
     },
     checkboxButton: {
         flex: 1,
