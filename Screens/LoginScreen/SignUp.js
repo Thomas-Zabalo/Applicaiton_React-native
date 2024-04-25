@@ -22,7 +22,8 @@ export default function SignUp({ navigation }) {
             const userData = {
                 name: nom,
                 email: email,
-                password: password
+                password: password,
+                icone: null
             };
             getUtilisateur(userData);
         } else {

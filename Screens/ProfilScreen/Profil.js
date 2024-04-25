@@ -17,7 +17,7 @@ function Profil({ navigation }) {
     const [nom, setEditedName] = useState('');
     const [email, setEditedEmail] = useState('');
 
-   
+
     useFocusEffect(
         React.useCallback(() => {
             retrieveData();
@@ -117,7 +117,7 @@ function Profil({ navigation }) {
                     <Text style={styles.title}>Mon profil</Text>
 
                     <View style={styles.profileImageContainer}>
-                        <Image source={{ uri: user.icone }} style={styles.profileImage} />
+                        <Image source={user.icone ? { uri: user.icone } : { uri: "https://pbs.twimg.com/profile_images/1628881949845585920/ygxSh1xI_400x400.jpg" }} style={styles.profileImage} />
                         {/* <Icon name="edit" size={24} color="white" style={styles.editIcon} onPress={selectImage} /> */}
                     </View>
 
