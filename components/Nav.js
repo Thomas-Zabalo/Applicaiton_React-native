@@ -78,7 +78,8 @@ function ProfilScreen() {
     <Stack.Navigator initialRouteName='Profil '>
       <Stack.Screen name="Profil " component={Profil} options={{ headerShown: false }} />
       <Stack.Screen name="Mes personnages" component={PersoUser} />
-      <Stack.Screen name="Detail de mon personnnage" component={DetailPerso} />
+      <Stack.Screen name="Detail de mon personnage" component={DetailPerso} />
+      {/*/Modification de son personnage */}
       <Stack.Screen name="Race" component={ModifRace} />
       <Stack.Screen name="SousRace" component={ModifSousRace} />
       <Stack.Screen name="Classe" component={ModifClasses} />
