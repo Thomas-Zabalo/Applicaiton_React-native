@@ -35,6 +35,6 @@ yarn-error.*
 *.tsbuildinfo
 
 # jetbrains setting folder
-.idea/
+/.idea/
 
-.vscode/
+/.vscode
