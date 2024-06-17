@@ -1,8 +1,10 @@
-### Toute les informations complémentaire sont sur ce répositorie
+## Toute les informations complémentaire sont sur ce répositorie
 
 # Répository Back-end
 [https://github.com/Thomas-Zabalo/Application web et mobile](https://github.com/mmicastres/sae401-thomas-zabalo-etienne-gonella)
 
+
+### Utilisation d'expo
 npx create-expo-app my-ap
 
 Créer une application : npx create-expo-app my-app
